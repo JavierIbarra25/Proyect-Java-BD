@@ -22,13 +22,30 @@ public class Main {
         
         System.out.println("¡Conexión exitosa!");
         
-        // 4. Probar consultas con StaffManager
+      // 4. Usar StaffManager
         StaffManager staffManager = new StaffManager();
-        System.out.println("\nProbando consulta directa:");
-        staffManager.imprimeStaff(368); // Cambia el ID por uno que exista en tu DB
-        
-        System.out.println("\nProbando stored procedure:");
-        staffManager.obtenerStaffSP(368); // Cambia el ID por uno que exista en tu DB
+
+        System.out.println("\n[1] ➤ Probar consulta directa (SELECT):");
+        staffManager.imprimeStaff(368);
+
+        System.out.println("\n[2] ➤ Probar procedimiento: obtener_staff");
+        staffManager.obtenerStaffSP(368);
+
+        System.out.println("\n[3] ➤ Probar procedimiento: insertar_staff");
+        staffManager.insertarStaffSP(
+            3001, "Laura Pérez", "tester", 4200, 5,
+            LocalDate.of(2024, 6, 1), 1008
+        );
+
+        System.out.println("\n[4] ➤ Probar procedimiento: actualizar_staff");
+        staffManager.actualizarStaffSP(
+            3001, "Laura Pérez", "qa analyst", 4600, 5,
+            LocalDate.of(2024, 6, 1), 1008
+        );
+
+        System.out.println("\n[5] ➤ Probar procedimiento: eliminar_staff");
+        staffManager.eliminarStaffSP(3001);
+
         
         // 5. Desconectar
         System.out.println("\nDesconectando...");
