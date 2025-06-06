@@ -36,7 +36,7 @@ public class StaffManager {
                 System.out.println("Staff " + id + " NO EXISTE");
                 return;
             }
-            System.out.printf("Staff: %d	%s	%s	%d	%d	%s	%d",
+            System.out.printf("Staff: %d\t%s\t%s\t%d\t%d\t%s\t%d\n",
                 rs.getInt(TB_STAFF_CODE),
                 rs.getString(TB_STAFF_NAME),
                 rs.getString(TB_STAFF_JOB),
@@ -71,7 +71,7 @@ public class StaffManager {
             String msg = stmt.getString(10);
 
             if (status == 0) {
-                System.out.printf("SP → %d	%s	%s	%d	%d	%s	%d",
+                System.out.printf("SP → %d\t%s\t%s\t%d\t%d\t%s\t%d\n",
                     stmt.getInt(2), stmt.getString(3), stmt.getString(4),
                     stmt.getInt(5), stmt.getInt(6), stmt.getDate(7), stmt.getInt(8));
             } else {
@@ -82,4 +82,93 @@ public class StaffManager {
             System.err.println("Error SP obtener: " + ex.getMessage());
         }
     }
+
+    public void insertarStaffSP(int id, String nombre, String puesto, int salario, 
+                                 Integer depto, LocalDate fechaInicio, Integer superior) {
+        try {
+            String sql = "{CALL insertar_staff(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+            CallableStatement stmt = mysqlmanager.conn.prepareCall(sql);
+
+            stmt.setInt(1, id);
+            stmt.setString(2, nombre);
+            stmt.setString(3, puesto);
+            stmt.setInt(4, salario);
+            if (depto != null) stmt.setInt(5, depto); else stmt.setNull(5, JDBCType.SMALLINT.getVendorTypeNumber());
+            stmt.setDate(6, Date.valueOf(fechaInicio));
+            if (superior != null) stmt.setInt(7, superior); else stmt.setNull(7, JDBCType.SMALLINT.getVendorTypeNumber());
+
+            stmt.registerOutParameter(8, JDBCType.INTEGER);
+            stmt.registerOutParameter(9, JDBCType.VARCHAR);
+
+            stmt.execute();
+
+            System.out.println("INSERTAR → Status: " + stmt.getInt(8));
+            System.out.println("Mensaje: " + stmt.getString(9));
+
+        } catch (SQLException ex) {
+            System.err.println("Error SP insertar: " + ex.getMessage());
+        }
+    }
+
+    public void actualizarStaffSP(int id, String nombre, String puesto, int salario, 
+                                  Integer depto, LocalDate fechaInicio, Integer superior) {
+        try {
+            String sql = "{CALL actualizar_staff(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+            CallableStatement stmt = mysqlmanager.conn.prepareCall(sql);
+
+            stmt.setInt(1, id);
+            stmt.setString(2, nombre);
+            stmt.setString(3, puesto);
+            stmt.setInt(4, salario);
+            if (depto != null) stmt.setInt(5, depto); else stmt.setNull(5, JDBCType.SMALLINT.getVendorTypeNumber());
+            stmt.setDate(6, Date.valueOf(fechaInicio));
+            if (superior != null) stmt.setInt(7, superior); else stmt.setNull(7, JDBCType.SMALLINT.getVendorTypeNumber());
+
+            stmt.registerOutParameter(8, JDBCType.INTEGER);
+            stmt.registerOutParameter(9, JDBCType.VARCHAR);
+
+            stmt.execute();
+
+            System.out.println("ACTUALIZAR → Status: " + stmt.getInt(8));
+            System.out.println("Mensaje: " + stmt.getString(9));
+
+        } catch (SQLException ex) {
+            System.err.println("Error SP actualizar: " + ex.getMessage());
+        }
+    }
+
+    public void eliminarStaffSP(int id) {
+        try {
+            String sql = "{CALL eliminar_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+            CallableStatement stmt = mysqlmanager.conn.prepareCall(sql);
+
+            stmt.setInt(1, id);
+
+            stmt.registerOutParameter(2, JDBCType.SMALLINT);
+            stmt.registerOutParameter(3, JDBCType.VARCHAR);
+            stmt.registerOutParameter(4, JDBCType.VARCHAR);
+            stmt.registerOutParameter(5, JDBCType.SMALLINT);
+            stmt.registerOutParameter(6, JDBCType.SMALLINT);
+            stmt.registerOutParameter(7, JDBCType.DATE);
+            stmt.registerOutParameter(8, JDBCType.SMALLINT);
+            stmt.registerOutParameter(9, JDBCType.INTEGER);
+            stmt.registerOutParameter(10, JDBCType.VARCHAR);
+
+            stmt.execute();
+
+            int status = stmt.getInt(9);
+            String msg = stmt.getString(10);
+
+            System.out.println("ELIMINAR → Status: " + status);
+            System.out.println("Mensaje: " + msg);
+
+            if (status == 0) {
+                System.out.println("Empleado eliminado: " + stmt.getString(3));
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Error SP eliminar: " + ex.getMessage());
+        }
+    }
 }
+
